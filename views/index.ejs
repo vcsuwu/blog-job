@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title><%= title %></title>
+	</head>
+	<body>
+    <main>
+      <p>Hello from <%= title %></p>
+      <ul>
+
+        <% posts.forEach(post => { %>
+        <li>
+          <a href="./posts/<%= post.title %>"><%= post.title %></a>
+          <p><%= post.desc %></p>
+        </li>
+      <% }); %>
+      </ul>
+
+    </main>
+	</body>
+</html>
