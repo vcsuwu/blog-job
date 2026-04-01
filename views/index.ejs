@@ -9,7 +9,6 @@
     <main>
       <p>Hello from <%= title %></p>
       <ul>
-
         <% posts.forEach(post => { %>
         <li>
           <a href="./posts/<%= post.title %>"><%= post.title %></a>
@@ -17,7 +16,6 @@
         </li>
       <% }); %>
       </ul>
-
     </main>
 	</body>
 </html>
