@@ -1,7 +1,10 @@
 const express = require('express')
 var session = require('express-session')
-const { posts } = require('./models/posts')
+const { getPosts } = require('./models/posts')
 const { verifyUser, createUser, getUsers } = require('./models/users')
+
+
+
 const postsRouter = require('./routes/posts')
 const app = express()
 const port = 3000
@@ -23,7 +26,7 @@ function isAuthenticated(req,res,next) {
 }
 
 app.get('/forms', (req, res) => {
-  res.render("forms")
+  return res.render("forms")
 })
 
 app.post('/forms', express.urlencoded({ extended: true }) , async (req, res) => {
@@ -43,8 +46,8 @@ app.post('/forms', express.urlencoded({ extended: true }) , async (req, res) => 
 })
 
 app.use(isAuthenticated)
-app.get('/', (req, res) => {
-  res.render("index", { title: "All posts", posts: posts.slice(-2).reverse() })
+app.get('/', async (req, res) => {
+  return res.render("index", { title: "All posts", posts: await getPosts() })
 })
 
 app.use('/posts', postsRouter)

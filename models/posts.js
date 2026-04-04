@@ -1,36 +1,24 @@
-let posts = [
-  {
-    title: "1",
-    desc: "putin nigger top"
-  },
-  {
-    title: "today is gokdalsdk;od day",
-    desc: "putin top"
-  },
-  {
-    title: "today is good day",
-    desc: "putin top213123"
-  },
-  {
-    title: "today is good day",
-    desc: "putin top"
-  },
-]
+const { Client, Pool } = require("pg")
+const pool = new Pool({
+  database: "mydb",
+})
+
+const getPosts = async function() {
+  const posts = await pool.query("SELECT * FROM posts")
+  console.log(posts)
+  return posts.rows
+}
 
 
-let findPost = postId => {
+let findPost = async postId => {
+  posts = await getPosts()
   return posts.find(p => p.title === postId)
 }
 
-let addPost = (title, desc) => {
-  let newPost = {
-    title,
-    desc,
-  }
-
-  posts.push(newPost)
-  console.log("added new post succesfully")
+let addPost = async (title, desc) => {
+  const res =  await pool.query("INSERT INTO posts(title,description) VALUES($1, $2)", [title, desc])
   console.log(posts)
+  return res
 }
 
 let removePost = (title) => {
@@ -53,7 +41,7 @@ let updatePost = (title, desc) => {
 }
 
 module.exports = {
-  posts,
+  getPosts,
   findPost,
   addPost,
   removePost,
