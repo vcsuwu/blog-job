@@ -1,7 +1,7 @@
 const express = require('express')
 var session = require('express-session')
 const { posts } = require('./models/posts')
-const { users, verifyUser } = require('./models/users')
+const { verifyUser, createUser, getUsers } = require('./models/users')
 const postsRouter = require('./routes/posts')
 const app = express()
 const port = 3000
@@ -35,13 +35,16 @@ app.post('/forms', express.urlencoded({ extended: true }) , async (req, res) => 
     console.log("yup data is alr")
     req.session.user = req.body.username
     return res.redirect('/')
+  } else {
+    await createUser(req.body.username, req.body.password)
+    console.log(getUsers())
+    return res.send("added new user")
   }
-  return res.send("youre nigga")
 })
 
 app.use(isAuthenticated)
 app.get('/', (req, res) => {
-  res.render("index", { title: "niggers", posts: posts.slice(-2).reverse() })
+  res.render("index", { title: "All posts", posts: posts.slice(-2).reverse() })
 })
 
 app.use('/posts', postsRouter)

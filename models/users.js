@@ -1,37 +1,58 @@
 const bcrypt = require("bcrypt");
 
-const users = [
-  {
-    username: "admin",
-    password: "placeholder",
-  }
-];
+const { Client, Pool } = require("pg")
+
+
+
 
 const saltRounds = 10;
 let testPassword = "nigga";
 
-bcrypt.genSalt(saltRounds, function(err, salt) {
-  bcrypt.hash(testPassword, salt, function(err, hash) {
-    users[0].password = hash;
-  })
-});
+//bcrypt.genSalt(saltRounds, function(err, salt) {
+//  bcrypt.hash(testPassword, salt, function(err, hash) {
+//    users[0].password = hash;
+//  })
+//});
 
-console.log(users)
+const pool = new Pool({
+  database: "mydb",
+})
 
-const findUser = function (username) {
-  return users.find(user => user.username === username)
+const getUsers = async function () {
+  const res = await pool.query('SELECT * from users')
+  console.log(res)
+  return res.rows
+}
+
+const findUser = async function (username) {
+  const users = await getUsers().catch(console.error)
+  console.log(users)
+  return users.find(user => user.name === username)
 }
 
 const verifyUser = async function (username, password) {
-  const user = findUser(username)
+  const user = await findUser(username)
   if (user) {
     console.log(user.password)
-    return await bcrypt.compare(password, user.password)
+    //return await bcrypt.compare(password, user.password)
+    return user.password === password
   }
   return false
 }
 
+const createUser = async function (username, password) {
+  const user = await findUser(username)
+  if (user) {
+    return
+  } else {
+    const res = await pool.query('INSERT INTO users VALUES(3,$1,$2)', [username, password])
+    return res
+  }
+
+}
+
 module.exports = {
   verifyUser,
-  users
+  createUser, 
+  getUsers,
 }
