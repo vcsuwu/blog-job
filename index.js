@@ -1,11 +1,9 @@
 const express = require('express')
 var session = require('express-session')
 const { getPosts } = require('./models/posts')
-const { verifyUser, createUser, getUsers } = require('./models/users')
-
-
-
+const { verifyUser, createUser, getUsers, findUserId } = require('./models/users')
 const postsRouter = require('./routes/posts')
+
 const app = express()
 const port = 3000
 
@@ -18,36 +16,37 @@ app.use(session({
   resave: false,
 }))
 
-function isAuthenticated(req,res,next) {
-  if (req.session.user) {
-    return next()
-  }
-  else return res.redirect('/forms')
-}
+app.use(express.static("public"))
 
-app.get('/forms', (req, res) => {
-  return res.render("forms")
+
+app.get('/login', (req, res) => {
+  if (req.session.user) {
+    return res.render("page", { title: "login" })
+  } else {
+    return res.render("page", { title: "login", content: "forms.ejs" })
+  }
 })
 
-app.post('/forms', express.urlencoded({ extended: true }) , async (req, res) => {
+app.get('/register', (req, res) => {
+  return res.render("page", { title: "Registration" })
+})
+
+app.post('/login', express.urlencoded({ extended: true }), async (req, res) => {
   if (!req.body || !req.body.username || !req.body.password) {
     return res.sendStatus(404)
   }
-  const verified = await verifyUser(req.body.username, req.body.password)
-  if (verified) {
+  const verifiedUser = await verifyUser(req.body.username, req.body.password)
+  if (verifiedUser) {
     console.log("yup data is alr")
-    req.session.user = req.body.username
-    return res.redirect('/')
+    req.session.user = verifiedUser.id
+    return res.redirect('/posts')
   } else {
-    await createUser(req.body.username, req.body.password)
-    console.log(getUsers())
-    return res.send("added new user")
+    return res.redirect('/register')
   }
 })
 
-app.use(isAuthenticated)
 app.get('/', async (req, res) => {
-  return res.render("index", { title: "All posts", posts: await getPosts() })
+  return res.render("page", { title: "Home page", content: "index.ejs", pass: { posts: await getPosts() } })
 })
 
 app.use('/posts', postsRouter)

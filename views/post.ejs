@@ -1,23 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+<div class="post">
+  <h1>
+    <%= pass.post.title %>
+  </h1>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>
-    <%= post.title %>
-  </title>
-</head>
-
-<body>
-  <main>
-    <p>Hello from <%= post.title %>
-    </p>
-
-    <p>
-      <%= post.description %>
-    </p>
-  </main>
-</body>
-
-</html>
+  <p>
+    <%= `${pass.post.created_at.toLocaleString()}` %>
+  </p>
+  <p>
+    <%= pass.post.description %>
+  </p>
+</div>

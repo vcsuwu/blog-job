@@ -1,10 +1,7 @@
-const { Client, Pool } = require("pg")
-const pool = new Pool({
-  database: "mydb",
-})
+const db = require('./db')
 
 const getPosts = async function() {
-  const posts = await pool.query("SELECT * FROM posts")
+  const posts = await db.query("SELECT * FROM posts")
   console.log(posts)
   return posts.rows
 }
@@ -12,11 +9,11 @@ const getPosts = async function() {
 
 let findPost = async postId => {
   posts = await getPosts()
-  return posts.find(p => p.title === postId)
+  return posts.find(p => p.id === postId)
 }
 
 let addPost = async (title, desc) => {
-  const res =  await pool.query("INSERT INTO posts(title,description) VALUES($1, $2)", [title, desc])
+  const res = await db.query("INSERT INTO posts(title,description) VALUES($1, $2)", [title, desc])
   console.log(posts)
   return res
 }

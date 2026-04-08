@@ -1,22 +1,38 @@
 const express = require("express");
 const router = express.Router();
 const { getPosts, findPost, addPost, removePost, updatePost } = require('../models/posts')
+const { getUsers } = require('../models/users.js')
+
+function isAuthenticated(req, res, next) {
+  if (req.session.user) {
+    return next()
+  }
+  else return res.redirect('/login')
+}
+
+async function isAdmin(id) {
+  users = await getUsers()
+  return users.some(userdb => userdb.id === id && userdb.name === "admin")
+}
 
 router.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
-router.get('/', (req, res) => {
-  return res.render('posts')
+router.get('/', async (req, res) => {
+  if (await isAdmin(req.session.user)) {
+    return res.render('page', { title: "All posts", content: "posts.ejs", pass: { posts: await getPosts(), admin: true } })
+  }
+  return res.render('page', { title: "All posts", content: "posts.ejs", pass: { posts: await getPosts() } })
 })
 
-router.get('/:title', async (req, res) => {
-  const post = await findPost(req.params.title)
+router.get('/:id', async (req, res) => {
+  const post = await findPost(req.params.id)
   if (!post) {
     return res.status(404).send("No such post");
   }
-  return res.render("post", { post })
+  return res.render("page", { title: "All posts", content: "post.ejs", pass: { post } })
 })
 
-router.post('/', async (req, res) => {
+router.post('/', isAuthenticated, async (req, res) => {
   if (!req.body || !req.body.title || !req.body.description) {
     return res.sendStatus(404)
   }
@@ -25,13 +41,13 @@ router.post('/', async (req, res) => {
   return res.redirect('/')
 })
 
-router.post('/remove', (req, res) => {
+router.post('/remove', isAuthenticated, (req, res) => {
   const { title = "default" } = req.body;
   removePost(title)
   res.redirect('/')
 })
 
-router.post('/change', (req, res) => {
+router.post('/change', isAuthenticated, (req, res) => {
   const { title = "default", desc = "desc" } = req.body;
   updatePost(title, desc)
   res.redirect('/')
