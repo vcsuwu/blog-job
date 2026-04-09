@@ -1,34 +1,44 @@
+//express
 const express = require('express')
-var session = require('express-session')
-const { getPosts } = require('./models/posts')
-const { verifyUser, createUser, getUsers, findUserId } = require('./models/users')
+const session = require('express-session')
 const postsRouter = require('./routes/posts')
+//models
+const { verifyUser } = require('./models/users')
+//components
+const { Layout } = require('./components/layout.js')
+//utils
+const { LoginForm } = require('./components/LoginForm.js')
 
 const app = express()
 const port = 3000
 
+//default config
 app.set('views', './views')
 app.set('view engine', 'ejs')
-
-app.use(session({
+sessionSettings = {
   secret: "test",
   saveUninitialized: false,
   resave: false,
-}))
-
+}
+app.use(session(sessionSettings))
 app.use(express.static("public"))
 
+//routing
 
-app.get('/login', (req, res) => {
-  if (req.session.user) {
-    return res.render("page", { title: "login" })
+app.get('/', (req, res) => {
+  if (req.headers['hx-request']) {
+    return res.send('<div> hola from home </div>')
   } else {
-    return res.render("page", { title: "login", content: "forms.ejs" })
+    return res.send(Layout('Home page', '<div> hola from home </div>'))
   }
 })
 
-app.get('/register', (req, res) => {
-  return res.render("page", { title: "Registration" })
+app.get('/login', (req, res) => {
+  if (req.session.user) {
+    return res.send(Layout('Authorized', LoginForm('/login')))
+  } else {
+    return res.send(Layout('Login', LoginForm('/login')))
+  }
 })
 
 app.post('/login', express.urlencoded({ extended: true }), async (req, res) => {
@@ -39,15 +49,12 @@ app.post('/login', express.urlencoded({ extended: true }), async (req, res) => {
   if (verifiedUser) {
     console.log("yup data is alr")
     req.session.user = verifiedUser.id
-    return res.redirect('/posts')
+    return res.send(`<div> You succesfully logged in! </div>`)
   } else {
-    return res.redirect('/register')
+    return res.send(LoginForm('/login'))
   }
 })
 
-app.get('/', async (req, res) => {
-  return res.render("page", { title: "Home page", content: "index.ejs", pass: { posts: await getPosts() } })
-})
 
 app.use('/posts', postsRouter)
 

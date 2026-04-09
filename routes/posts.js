@@ -1,7 +1,14 @@
+//express
 const express = require("express");
 const router = express.Router();
+//models
 const { getPosts, findPost, addPost, removePost, updatePost } = require('../models/posts')
 const { getUsers } = require('../models/users.js')
+//components
+const { Layout } = require('../components/layout.js')
+const { Posts } = require('../components/Posts.js')
+const { Post } = require('../components/Post.js')
+//utils
 
 function isAuthenticated(req, res, next) {
   if (req.session.user) {
@@ -18,10 +25,13 @@ async function isAdmin(id) {
 router.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
 router.get('/', async (req, res) => {
-  if (await isAdmin(req.session.user)) {
-    return res.render('page', { title: "All posts", content: "posts.ejs", pass: { posts: await getPosts(), admin: true } })
+  // if (await isAdmin(req.session.user)) {
+  //   return res.send(Layout('Posts', Posts(await getPosts())))
+  // }
+  if (req.headers['hx-request']) {
+    return res.send(Posts(await getPosts()))
   }
-  return res.render('page', { title: "All posts", content: "posts.ejs", pass: { posts: await getPosts() } })
+  res.send(Layout('Posts', Posts(await getPosts())))
 })
 
 router.get('/:id', async (req, res) => {
@@ -29,7 +39,7 @@ router.get('/:id', async (req, res) => {
   if (!post) {
     return res.status(404).send("No such post");
   }
-  return res.render("page", { title: "All posts", content: "post.ejs", pass: { post } })
+  res.send(Layout(`Post ${post.id}`, Post(post)))
 })
 
 router.post('/', isAuthenticated, async (req, res) => {
@@ -38,7 +48,7 @@ router.post('/', isAuthenticated, async (req, res) => {
   }
   addPost(req.body.title, req.body.description)
   console.log(getPosts())
-  return res.redirect('/')
+  res.redirect('/')
 })
 
 router.post('/remove', isAuthenticated, (req, res) => {
