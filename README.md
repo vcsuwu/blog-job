@@ -39,3 +39,13 @@ Tech stack:
 - TailwindCSS
 
 [Preview video:](https://github.com/vcsuwu/blog-job/raw/refs/heads/main/recording-2026-04-10_13-38-06.mp4)
+
+# TODO's
+
+- Security
+
+I need to sanitize or how that named, inputs that go through form, so nobody could inject html or sql into it.
+
+- Design
+
+Make some interesting pages to show posts, add search capability, maybe animation and responsive design
