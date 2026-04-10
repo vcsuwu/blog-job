@@ -37,3 +37,5 @@ Tech stack:
 - PosgtreSQL
 - HTMX
 - TailwindCSS
+
+[Preview video:](https://github.com/vcsuwu/blog-job/raw/refs/heads/main/recording-2026-04-10_13-38-06.mp4)
