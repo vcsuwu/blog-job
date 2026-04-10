@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
   //   return res.send(Layout('Posts', Posts(await getPosts())))
   // }
   if (req.headers['hx-request']) {
-    return res.send(Posts(await getPosts()))
+    return res.send(Posts(await getPosts()) + "<title>Posts</title>")
   }
   res.send(Layout('Posts', Posts(await getPosts())))
 })
@@ -38,6 +38,9 @@ router.get('/:id', async (req, res) => {
   const post = await findPost(req.params.id)
   if (!post) {
     return res.status(404).send("No such post");
+  }
+  if (req.headers["hx-request"]) {
+    return res.send(Post(post) + `<title>${post.title}</title>`)
   }
   res.send(Layout(`Post ${post.id}`, Post(post)))
 })

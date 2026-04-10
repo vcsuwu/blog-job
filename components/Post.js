@@ -1,9 +1,9 @@
+const marked = require('marked')
+
 const Post = (post) => `
-  <div>
     <h1> ${post.title} </h1>
-    <p> ${post.description} </p>
-    <p> ${post.created_at} </p>
-  </div>
+    <div>${marked.parse(post.description)}<div>
+    <p> ${post.created_at.toLocaleString()} </p>
 `
 
 module.exports = {

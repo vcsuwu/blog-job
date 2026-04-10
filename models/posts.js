@@ -1,5 +1,9 @@
 const db = require('./db')
 
+// GLOBAL TODO:
+// 1. Add callbacks to handle errors and log them into console
+// 2. Maybe reformat for better management in future
+
 const getPosts = async function() {
   const posts = await db.query("SELECT * FROM posts")
   console.log(posts)
@@ -8,8 +12,8 @@ const getPosts = async function() {
 
 
 let findPost = async postId => {
-  posts = await getPosts()
-  return posts.find(p => p.id === postId)
+  const post = await db.query("SELECT * FROM posts WHERE id = $1", [postId])
+  return post.rows[0]
 }
 
 let addPost = async (title, desc) => {

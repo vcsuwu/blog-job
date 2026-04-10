@@ -7,13 +7,13 @@ const Layout = (title, content = "") => `
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${title}</title>
-  <link href="/styles.css" rel="stylesheet">
+  <link href="/output.css" rel="stylesheet">
   <script defer src="/htmx.min.js"></script>
 </head>
 
-<body>
+<body class="flex flex-col items-center w-full font-pixel bg-black text-white">
   ${Navbar()}
-  <main>
+  <main class="flex flex-col w-1/2 items-center justify-center min-h-dvh gap-10 py-16">
     ${content}
   </main>
 </body>

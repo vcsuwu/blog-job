@@ -27,16 +27,22 @@ app.use(express.static("public"))
 
 app.get('/', (req, res) => {
   if (req.headers['hx-request']) {
-    return res.send('<div> hola from home </div>')
+    return res.send('<title>Home</title><div> hola from home </div>')
   } else {
-    return res.send(Layout('Home page', '<div> hola from home </div>'))
+    return res.send(Layout('Home', '<div> hola from home </div>'))
   }
 })
 
 app.get('/login', (req, res) => {
   if (req.session.user) {
+    if (req.headers["hx-request"]) {
+      return res.send(LoginForm('/login', "Authorized"))
+    }
     return res.send(Layout('Authorized', LoginForm('/login')))
   } else {
+    if (req.headers["hx-request"]) {
+      return res.send(LoginForm('/login', "Login"))
+    }
     return res.send(Layout('Login', LoginForm('/login')))
   }
 })
@@ -48,6 +54,10 @@ app.post('/login', express.urlencoded({ extended: true }), async (req, res) => {
   const verifiedUser = await verifyUser(req.body.username, req.body.password)
   if (verifiedUser) {
     console.log("yup data is alr")
+    if (verifiedUser.name === "admin") {
+      req.session.isAdmin = true;
+      return res.send("<p>You logged as admin!</p>")
+    }
     req.session.user = verifiedUser.id
     return res.send(`<div> You succesfully logged in! </div>`)
   } else {
