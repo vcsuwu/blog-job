@@ -42,6 +42,10 @@ Tech stack:
 
 # TODO's
 
+- Api
+
+Just use api instead of server, makes things simpler
+
 - Security
 
 I need to sanitize or how that named, inputs that go through form, so nobody could inject html or sql into it.
